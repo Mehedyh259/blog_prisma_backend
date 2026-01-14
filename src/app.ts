@@ -1,20 +1,21 @@
 import express, { Application } from "express";
 import cors from "cors";
-import { postRouter } from "./modules/post/post.router";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
+import { postRouter } from "./modules/post/post.router";
 
 const app: Application = express();
+app.all("/api/auth/*splat", toNodeHandler(auth));
+
+app.use(
+  cors({
+    origin: process.env.APP_URL,
+    credentials: true,
+  })
+);
 
 app.use(express.json());
-app.use(cors());
-app.all("/api/auth", toNodeHandler(auth));
-
-
-
-app.use("/posts",postRouter)
-
-
+app.use("/posts", postRouter);
 
 app.get("/", (req, res) => {
   res.send("Server is running 🚀");
